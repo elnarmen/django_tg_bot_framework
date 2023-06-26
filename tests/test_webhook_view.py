@@ -9,8 +9,8 @@ from django.urls import reverse, path
 
 from tg_api import Update
 
-from ..views import process_webhook_call
-from ..contextvars_tools import set_contextvar
+from django_tg_bot_framework.views import process_webhook_call
+from django_tg_bot_framework.contextvars_tools import set_contextvar
 
 
 process_update_callable: ContextVar[Callable[[...], ...]] = ContextVar('process_update_callable')

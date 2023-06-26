@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+
+  django_tg_bot_framework:
+    build:
+      context: .
+    image: django_tg_bot_framework:latest
+    volumes:
+      - ./django_tg_bot_framework:/opt/app/django_tg_bot_framework/
+      - ./django_tg_bot_framework:/opt/app/tests/
+      - ./pyproject.toml:/opt/app/pyproject.toml
+      - ./poetry.lock:/opt/app/poetry.lock
+    # need some forever process for using bash for install packages
+    command: tail -f /dev/null
+
+  py-linters:
+    build:
+      context: ./py-linters/
+    image: django_tg_bot_framework-py-linters:latest
+    volumes:
+      - ./py-linters/pyproject.toml:/opt/linters/pyproject.toml
+      - ./py-linters/poetry.lock:/opt/linters/poetry.lock
+      # mount source code to check a code with linter running inside a container
+      - ./django_tg_bot_framework:/django_tg_bot_framework
+      - ./tests:/tests
+    command: 'echo Skipped'

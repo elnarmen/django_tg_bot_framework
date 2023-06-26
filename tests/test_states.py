@@ -1,5 +1,5 @@
-from ..states import BaseState
-from ..routes import Router
+from django_tg_bot_framework.states import BaseState
+from django_tg_bot_framework.routes import Router
 
 
 def test_state_ignore_unknown_args():

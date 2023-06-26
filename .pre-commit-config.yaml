@@ -1,0 +1,21 @@
+default_language_version:
+  python: 'python3.11'
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.2.0
+    hooks:
+      - id: check-added-large-files
+
+  - repo: local
+    hooks:
+      - id: py-linters
+        name: py-linters
+        entry: docker compose run -T --rm py-linters flake8 /django_tg_bot_framework/ /tests/
+        language: system
+        pass_filenames: no
+
+      - id: test-django_tg_bot_framework
+        name: test-django_tg_bot_framework
+        entry: docker compose run -T --rm django_tg_bot_framework pytest
+        language: system
+        pass_filenames: no

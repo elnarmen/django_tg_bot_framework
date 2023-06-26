@@ -1,7 +1,7 @@
 import pytest
 
-from ..routes import Route
-from ..states import BaseState
+from django_tg_bot_framework.routes import Route
+from django_tg_bot_framework.states import BaseState
 
 
 def test_routes_creation():

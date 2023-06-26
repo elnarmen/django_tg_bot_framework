@@ -2,10 +2,10 @@ import pytest
 
 from tg_api import Update
 
-from ..decorators import redirect_tg_commands
-from ..routes import Router
-from ..states import BaseState
-from ..state_machine import StateMachine
+from django_tg_bot_framework.decorators import redirect_tg_commands
+from django_tg_bot_framework.routes import Router
+from django_tg_bot_framework.states import BaseState
+from django_tg_bot_framework.state_machine import StateMachine
 
 
 @pytest.mark.parametrize(

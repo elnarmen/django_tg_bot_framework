@@ -3,10 +3,10 @@ from typing import ClassVar, Any
 
 import pytest
 
-from ..routes import Router
-from ..states import BaseState
-from ..state_machine import StateMachine
-from ..exceptions import TooLongTransitionError
+from django_tg_bot_framework.routes import Router
+from django_tg_bot_framework.states import BaseState
+from django_tg_bot_framework.state_machine import StateMachine
+from django_tg_bot_framework.exceptions import TooLongTransitionError
 
 
 def test_single_state():

@@ -5,14 +5,12 @@ description = "Framework for building telegram bots"
 authors = ["Ilya Osipov <070809010@mail.ru>", "Evgeny Evseev <pelid80@gmail.com>"]
 license = "GNU GPLv3"
 readme = "README.md"
-packages = [{include = "django_tg_bot_framework"}]
+
 
 [tool.poetry.dependencies]
 python = "^3.11"
 django = "^4"
 tg_api = "1.0.0"
-pydantic = "1.10.8"
-pytest = {version = "7.3.*", extras = ["anyio"]}
 pytest-django = "4.5.2"
 django-storages = "^1.13.2"
 
