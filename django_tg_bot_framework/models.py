@@ -78,7 +78,9 @@ class BaseStateMachineDump(models.Model):
         ]
 
 
-class BaseTgUser(models.Model):
+class TgUserProfileMixin(models.Model):
+    """Заготовка для быстрого добавления в модель данных Django стандартного набора полей."""
+
     tg_username = models.CharField(
         "Имя юзера в Tg",
         max_length=50,
@@ -93,7 +95,7 @@ class BaseTgUser(models.Model):
     tg_user_id = models.CharField(
         "Id юзера в Tg",
         max_length=50,
-        unique=True,
+        unique=False,  # is not unique to simplify combining with other models
         db_index=True,
         help_text="Пример: 123456789. Чтобы узнать ID пользователя, перешлите сообщение пользователя боту "
                   "<a href='https://t.me/userinfobot'>@userinfobot</a>.",
@@ -101,8 +103,6 @@ class BaseTgUser(models.Model):
 
     class Meta:
         abstract = True
-        verbose_name = "Пользователь tg-бота"
-        verbose_name_plural = "Пользователи tg-бота"
         constraints = [
             models.CheckConstraint(
                 check=models.Q(tg_username__regex=TG_USERNAME_PATTERN) | models.Q(tg_username=''),
