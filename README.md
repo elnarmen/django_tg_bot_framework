@@ -108,7 +108,6 @@ rootdir: /opt/app/src
 plugins: django-4.5.2, httpx-0.22.0, anyio-3.7.0
 collected 23 items
 
-test_decorators.py ......                             [ 26%]
 test_route_validation.py ........                     [ 60%]
 test_router.py ...                                    [ 73%]
 test_state_machine.py .....                           [ 95%]
@@ -117,11 +116,21 @@ test_states.py .                                      [100%]
 ================= 6 passed in 0.22s ========================
 ```
 
-Если вы чините поломанный тест, часто его запускаете и не хотите ждать когда отработают остальные, то можно запускать их по-отдельности. При этом полезно включать опцию `-s`, чтобы pytest не перехватывал вывод в консоль и выводил все сообщения. Пример для теста `test_redirect_tg_commands` из файла `tests/test_decorators.py.py`:
+Если вы чините поломанный тест, часто его запускаете и не хотите ждать когда отработают остальные, то можно запускать их по-отдельности. При этом полезно включать опцию `-s`, чтобы pytest не перехватывал вывод в консоль и выводил все сообщения. Пример для теста `test_state_ignore_unknown_args` из файла `tests/test_states.py`:
 
 ```shell
-$ docker compose run --rm django_tg_bot_framework pytest -s tests/test_decorators.py::test_redirect_tg_commands
+$ docker compose run --rm django_tg_bot_framework pytest -s tests/test_states.py::test_state_ignore_unknown_args
+================ test session starts =======================
+platform linux -- Python 3.11.4, pytest-7.3.2, pluggy-1.2.0
+django: settings: tests.settings (from ini)
+rootdir: /opt/app
+configfile: pyproject.toml
+plugins: anyio-3.7.0, django-4.5.2, httpx-0.22.0
+collected 1 item
 
+tests/test_states.py .
+
+================= 1 passed in 0.21s ========================
 ```
 
 Подробнее про [Pytest usage](https://docs.pytest.org/en/6.2.x/usage.html).
