@@ -27,5 +27,5 @@ RUN poetry install --no-ansi
 WORKDIR ${BASE_DIR}/src
 ENV PYTHONPATH "$PYTHONPATH:${BASE_DIR}/src/"
 
-COPY ./django_tg_bot_framework ./
-COPY ./tests ./
+COPY ./django_tg_bot_framework django_tg_bot_framework
+COPY ./tests tests

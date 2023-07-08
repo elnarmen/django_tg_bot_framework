@@ -120,7 +120,7 @@ test_states.py .                                                                
 Если вы чините поломанный тест, часто его запускаете и не хотите ждать когда отработают остальные, то можно запускать их по-отдельности. При этом полезно включать опцию `-s`, чтобы pytest не перехватывал вывод в консоль и выводил все сообщения. Пример для теста `test_redirect_tg_commands` из файла `tests/test_decorators.py.py`:
 
 ```shell
-$ docker compose run --rm django_tg_bot_framework pytest -s test_decorators.py::test_redirect_tg_commands
+$ docker compose run --rm django_tg_bot_framework pytest -s tests/test_decorators.py::test_redirect_tg_commands
 
 ```
 

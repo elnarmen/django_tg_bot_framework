@@ -7,8 +7,8 @@ services:
       context: .
     image: django_tg_bot_framework:latest
     volumes:
-      - ./django_tg_bot_framework:/opt/app/django_tg_bot_framework/
-      - ./django_tg_bot_framework:/opt/app/tests/
+      - ./django_tg_bot_framework:/opt/app/src/django_tg_bot_framework/
+      - ./tests:/opt/app/src/tests/
       - ./pyproject.toml:/opt/app/pyproject.toml
       - ./poetry.lock:/opt/app/poetry.lock
     # need some forever process for using bash for install packages
