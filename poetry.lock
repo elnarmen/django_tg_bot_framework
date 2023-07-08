@@ -77,28 +77,6 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
-name = "django-storages"
-version = "1.13.2"
-description = "Support for many storage backends in Django"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "django-storages-1.13.2.tar.gz", hash = "sha256:cbadd15c909ceb7247d4ffc503f12a9bec36999df8d0bef7c31e57177d512688"},
-    {file = "django_storages-1.13.2-py3-none-any.whl", hash = "sha256:31dc5a992520be571908c4c40d55d292660ece3a55b8141462b4e719aa38eab3"},
-]
-
-[package.dependencies]
-Django = ">=3.2"
-
-[package.extras]
-azure = ["azure-storage-blob (>=12.0.0)"]
-boto3 = ["boto3 (>=1.4.4)"]
-dropbox = ["dropbox (>=7.2.1)"]
-google = ["google-cloud-storage (>=1.27.0)"]
-libcloud = ["apache-libcloud"]
-sftp = ["paramiko (>=1.10.0)"]
-
-[[package]]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -379,4 +357,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "49fbd219921646439cf93a42144e3c45f3ed09f91e2271b89d72d2b4167978c1"
+content-hash = "996f88a1fc38eaffcbcfcbea69ca0c70e8eef64ab6bf96bcf2ef36d3f3805473"

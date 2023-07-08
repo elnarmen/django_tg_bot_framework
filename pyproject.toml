@@ -11,8 +11,6 @@ readme = "README.md"
 python = "^3.11"
 django = "^4"
 tg_api = "1.0.0"
-pytest-django = "4.5.2"
-django-storages = "^1.13.2"
 
 
 [tool.poetry.group.test.dependencies]
