@@ -21,12 +21,16 @@ class StateMachine(BaseModel):
 
     def reenter_state(self) -> None:
         next_state = self.current_state.enter_state()
-        self.switch_to(next_state or self.current_state)
+
+        if next_state:
+            self.switch_to(next_state)
 
     def process(self, event: Any):
         """Обрабатывает поступившее событие."""
         next_state = self.current_state.process(event=event)
-        self.switch_to(next_state or self.current_state)
+
+        if next_state:
+            self.switch_to(next_state)
 
     def switch_to(self, next_state: BaseState):
         """Переключает стейт-машину в новое состояние и следует далее по авто-переходам до конечного состояния."""
@@ -34,9 +38,6 @@ class StateMachine(BaseModel):
             raise ValueError(f'Expect BaseState subclass as next_state value, got {next_state!r}')
 
         counter = count(1)
-
-        if self.current_state == next_state:
-            return
 
         prev_state = self.current_state
 
