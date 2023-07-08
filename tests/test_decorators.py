@@ -45,7 +45,7 @@ def test_redirect_tg_commands(text: str | None, locator: str):
         update.message.text = text
 
     state_machine = StateMachine(current_state=router.locate('/'))
-    state_machine.reenter_state(update)
+    state_machine.reenter_state()
     state_machine.process(update)
 
     assert state_machine.current_state.state_class_locator == locator

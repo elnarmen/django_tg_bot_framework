@@ -23,7 +23,7 @@ def test_single_state():
     state_machine = StateMachine(
         current_state=router.locate('/'),
     )
-    state_machine.reenter_state(first_event)
+    state_machine.reenter_state()
 
     state_machine.process(first_event)
     RootState.enter_state.assert_called_once()
@@ -54,7 +54,7 @@ def test_states_transition():
     class SecondState(BaseState):
         counter: int
 
-        def enter_state(self, first_state) -> BaseState | None:
+        def enter_state(self) -> BaseState | None:
             return router.locate('/first/', counter=self.counter + 1)
 
         process: ClassVar = MagicMock(return_value=None)
@@ -63,7 +63,7 @@ def test_states_transition():
     state_machine = StateMachine(
         current_state=router.locate('/first/'),
     )
-    state_machine.reenter_state(first_event)
+    state_machine.reenter_state()
 
     state_machine.process(first_event)
     assert state_machine.current_state.state_class_locator == '/first/'
@@ -78,7 +78,6 @@ def test_states_transition():
 
 def test_inifinite_transitions_loop():
     router = Router()
-    event = 'event'
     calls_counters = {
         'enter_state': 0,
     }
@@ -87,7 +86,7 @@ def test_inifinite_transitions_loop():
     class RootState(BaseState):
         counter: int = 1
 
-        def enter_state(self, event) -> BaseState | None:
+        def enter_state(self) -> BaseState | None:
             calls_counters['enter_state'] += 1
             return router.locate('/', counter=self.counter + 1)
 
@@ -96,7 +95,7 @@ def test_inifinite_transitions_loop():
             current_state=router.locate('/'),
             max_transition_length=3,
         )
-        state_machine.reenter_state(event)
+        state_machine.reenter_state()
 
     assert calls_counters['enter_state'] == 4
 
@@ -113,13 +112,13 @@ def test_cancel_transition_on_enter_state_failure():
 
     @router.register('/second/')
     class SecondState(BaseState):
-        def enter_state(self, event: Any) -> BaseState | None:
+        def enter_state(self) -> BaseState | None:
             raise RuntimeError('Oops...')
 
     state_machine = StateMachine(
         current_state=router.locate('/first/'),
     )
-    state_machine.reenter_state(None)
+    state_machine.reenter_state()
 
     with pytest.raises(RuntimeError, match='Oops'):
         state_machine.process(None)
@@ -139,7 +138,7 @@ def test_cancel_transition_on_exit_state_failure():
 
     @router.register('/second/')
     class SecondState(BaseState):
-        def enter_state(self, event: Any) -> None:
+        def enter_state(self) -> None:
             return router.locate('/third/')
 
         def exit_state(self, state_class_transition: bool) -> None:
@@ -152,7 +151,7 @@ def test_cancel_transition_on_exit_state_failure():
     state_machine = StateMachine(
         current_state=router.locate('/first/'),
     )
-    state_machine.reenter_state(None)
+    state_machine.reenter_state()
 
     with pytest.raises(RuntimeError, match='Oops'):
         state_machine.process(None)

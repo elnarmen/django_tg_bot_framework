@@ -28,7 +28,7 @@ class BaseState(BaseModel):
         validate_all = True
         extra = 'ignore'
 
-    def enter_state(self, event: Any) -> Optional['BaseState']:
+    def enter_state(self) -> Optional['BaseState']:
         """Run any custom logic on state enter.
 
         Can return state object to force state machine switching to another state.
