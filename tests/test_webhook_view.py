@@ -53,6 +53,15 @@ urlpatterns = [
             'webhook_token': '',
         },
     ),
+    path(
+        'webhook/custom-get-param/',
+        process_webhook_call,
+        kwargs={
+            'process_update': call_process_update_callable,
+            'webhook_token': 'secret-webhook-token',
+            'token_get_params': ['custom-token'],
+        },
+    ),
 ]
 
 request_payload_sample = {
@@ -141,7 +150,7 @@ def test_reject_invalid_update():
     ],
 )
 @override_settings(ROOT_URLCONF=__name__)
-def test_disabling_webhook_token_check(webhook_url):
+def test_disabling_webhook_token_check(webhook_url: str):
     process_update = MagicMock(return_value=None)
     client = Client()
 
@@ -154,6 +163,35 @@ def test_disabling_webhook_token_check(webhook_url):
         assert response.status_code == 200
         process_update.assert_called_once()
 
+
+@pytest.mark.parametrize(
+    "webhook_url",
+    [
+        '/webhook/?telegram_bot_api_secret_token=secret-webhook-token',
+        '/webhook/custom-get-param/?custom-token=secret-webhook-token',
+    ],
+)
+@override_settings(ROOT_URLCONF=__name__)
+def test_webhook_authentication_by_get_param(webhook_url: str):
+    process_update = MagicMock(return_value=None)
+    client = Client()
+
+    with set_contextvar(process_update_callable, process_update):
+        webhook_url_without_get_params = webhook_url.split('?')[0]
+        response = client.post(
+            webhook_url_without_get_params,
+            request_payload_sample,
+            content_type='application/json',
+        )
+        assert response.status_code == 403
+
+        response = client.post(
+            webhook_url,
+            request_payload_sample,
+            content_type='application/json',
+        )
+        assert response.status_code == 200
+        process_update.assert_called_once()
 
 # TODO test_ignore_non_json_request():
 

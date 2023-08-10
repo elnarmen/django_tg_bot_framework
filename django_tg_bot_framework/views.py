@@ -1,5 +1,6 @@
+from contextlib import suppress
 import logging
-from typing import Callable
+from typing import Callable, Sequence
 
 from pydantic import ValidationError
 
@@ -21,12 +22,21 @@ def process_webhook_call(
     request: HttpRequest,
     *,
     webhook_token: str | None = None,
+    token_get_params: Sequence[str] = ('telegram_bot_api_secret_token',),
     process_update: Callable[[Update], None],
 ) -> JsonResponse:
     logger.debug('Telegram webhook called')
 
-    request_token = request.META.get('HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN')
-    if webhook_token and (not request_token or request_token != webhook_token):
+    request_tokens_to_select = [
+        *[request.GET.get(name) for name in token_get_params],
+        request.META.get('HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN'),
+    ]
+
+    request_token = None
+    with suppress(StopIteration):
+        request_token = next(token for token in request_tokens_to_select if token)
+
+    if webhook_token and request_token != webhook_token:
         return JsonResponse({'error': 'Invalid secret token.'}, status=403)
 
     try:
