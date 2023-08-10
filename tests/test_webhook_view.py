@@ -55,31 +55,31 @@ urlpatterns = [
     ),
 ]
 
+request_payload_sample = {
+    'update_id': 1,
+    'message': {
+        'message_id': 101,
+        'from': {
+            'id': 4114,
+            'is_bot': False,
+            'first_name': 'Иван Петров',
+            'username': 'ivan_petrov',
+        },
+        'date': 0,
+        'chat': {
+            'id': 90001,  # noqa A003
+            'type': 'private',  # noqa A003
+        },
+    },
+}
+
 
 @override_settings(ROOT_URLCONF=__name__)
 def test_success(
     httpx_mock: HTTPXMock,
 ):
     process_update = MagicMock(return_value=None)
-
-    request_payload = {
-        'update_id': 1,
-        'message': {
-            'message_id': 101,
-            'from': {
-                'id': 4114,
-                'is_bot': False,
-                'first_name': 'Иван Петров',
-                'username': 'ivan_petrov',
-            },
-            'date': 0,
-            'chat': {
-                'id': 90001,  # noqa A003
-                'type': 'private',  # noqa A003
-            },
-        },
-    }
-    expected_update = Update.parse_obj(request_payload)
+    expected_update = Update.parse_obj(request_payload_sample)
 
     with set_contextvar(process_update_callable, process_update):
 
@@ -89,7 +89,7 @@ def test_success(
 
         response = client.post(
             '/webhook/',
-            request_payload,
+            request_payload_sample,
             content_type='application/json',
         )
         assert response.status_code == 200
@@ -145,28 +145,10 @@ def test_disabling_webhook_token_check(webhook_url):
     process_update = MagicMock(return_value=None)
     client = Client()
 
-    request_payload = {
-        'update_id': 1,
-        'message': {
-            'message_id': 101,
-            'from': {
-                'id': 4114,
-                'is_bot': False,
-                'first_name': 'Иван Петров',
-                'username': 'ivan_petrov',
-            },
-            'date': 0,
-            'chat': {
-                'id': 90001,  # noqa A003
-                'type': 'private',  # noqa A003
-            },
-        },
-    }
-
     with set_contextvar(process_update_callable, process_update):
         response = client.post(
             webhook_url,
-            request_payload,
+            request_payload_sample,
             content_type='application/json',
         )
         assert response.status_code == 200
