@@ -20,13 +20,13 @@ logger = logging.getLogger('django_tg_bot_framework')
 def process_webhook_call(
     request: HttpRequest,
     *,
-    webhook_token: str,
+    webhook_token: str | None = None,
     process_update: Callable[[Update], None],
 ) -> JsonResponse:
     logger.debug('Telegram webhook called')
 
     request_token = request.META.get('HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN')
-    if not request_token or request_token != webhook_token:
+    if webhook_token and (not request_token or request_token != webhook_token):
         return JsonResponse({'error': 'Invalid secret token.'}, status=403)
 
     try:

@@ -2,10 +2,11 @@ from contextvars import ContextVar
 from typing import Callable
 from unittest.mock import MagicMock
 
+import pytest
 from pytest_httpx import HTTPXMock
 
 from django.test import Client, override_settings
-from django.urls import reverse, path
+from django.urls import path
 
 from tg_api import Update
 
@@ -15,14 +16,41 @@ from django_tg_bot_framework.contextvars_tools import set_contextvar
 
 process_update_callable: ContextVar[Callable[[...], ...]] = ContextVar('process_update_callable')
 
+
+def call_process_update_callable(*args, **kwargs):
+    return process_update_callable.get()(*args, **kwargs)
+
+
 urlpatterns = [
     path(
-        '/webhook/',
+        'webhook/',
         process_webhook_call,
-        name='webhook',
         kwargs={
-            'process_update': lambda *args, **kwargs: process_update_callable.get()(*args, **kwargs),
+            'process_update': call_process_update_callable,
             'webhook_token': 'secret-webhook-token',
+        },
+    ),
+    path(
+        'webhook/token-unspecified/',
+        process_webhook_call,
+        kwargs={
+            'process_update': call_process_update_callable,
+        },
+    ),
+    path(
+        'webhook/token-in-null/',
+        process_webhook_call,
+        kwargs={
+            'process_update': call_process_update_callable,
+            'webhook_token': None,
+        },
+    ),
+    path(
+        'webhook/token-in-empty-string/',
+        process_webhook_call,
+        kwargs={
+            'process_update': call_process_update_callable,
+            'webhook_token': '',
         },
     ),
 ]
@@ -60,7 +88,7 @@ def test_success(
         })
 
         response = client.post(
-            reverse('webhook'),
+            '/webhook/',
             request_payload,
             content_type='application/json',
         )
@@ -74,7 +102,7 @@ def test_success(
 def test_reject_unauthorized():
     client = Client()
     response = client.post(
-        reverse('webhook'),
+        '/webhook/',
         {'update_id': 1},
         content_type='application/json',
     )
@@ -89,7 +117,7 @@ def test_reject_invalid_update():
     })
 
     response = client.post(
-        reverse('webhook'),
+        '/webhook/',
         {},
         content_type='application/json',
     )
@@ -102,6 +130,48 @@ def test_reject_invalid_update():
             'type': 'value_error.missing',
         },
     ]
+
+
+@pytest.mark.parametrize(
+    "webhook_url",
+    [
+        '/webhook/token-unspecified/',
+        '/webhook/token-in-null/',
+        '/webhook/token-in-empty-string/',
+    ],
+)
+@override_settings(ROOT_URLCONF=__name__)
+def test_disabling_webhook_token_check(webhook_url):
+    process_update = MagicMock(return_value=None)
+    client = Client()
+
+    request_payload = {
+        'update_id': 1,
+        'message': {
+            'message_id': 101,
+            'from': {
+                'id': 4114,
+                'is_bot': False,
+                'first_name': 'Иван Петров',
+                'username': 'ivan_petrov',
+            },
+            'date': 0,
+            'chat': {
+                'id': 90001,  # noqa A003
+                'type': 'private',  # noqa A003
+            },
+        },
+    }
+
+    with set_contextvar(process_update_callable, process_update):
+        response = client.post(
+            webhook_url,
+            request_payload,
+            content_type='application/json',
+        )
+        assert response.status_code == 200
+        process_update.assert_called_once()
+
 
 # TODO test_ignore_non_json_request():
 
